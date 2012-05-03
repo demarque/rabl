@@ -88,7 +88,11 @@ module Rabl
     # child(@users => :people) { ... }
     def child(data, options={}, &block)
       return false unless data.present? && resolve_condition(options)
-      name, object = data_name(data), data_object(data)
+      if options[:wrapper]
+        name, object = data.to_s, @_object
+      else
+        name, object = data_name(data), data_object(data)
+      end
       include_root = is_collection?(object) && @options[:child_root] # child @users
       engine_options = @options.slice(:child_root).merge(:root => include_root)
       object = { object => name } if data.respond_to?(:each_pair) && object # child :users => :people
